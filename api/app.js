@@ -3,6 +3,13 @@ const cors = require("cors");
 const app = express();
 const mongoose = require("mongoose");
 
+const cron = require('node-cron');
+
+
+cron.schedule('* * * * * *', () => {
+  console.log('running a task every second');
+});
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
