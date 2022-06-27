@@ -33,22 +33,23 @@ async function login(req, res) {
   try {
     const { username, password } = req.body;
     const user = await User.findOne({ username });
+
     // did user give the correct password?
     const verified = await verifyPassword(password, user.password);
     // if password was incorrect return error response.
-    if (!verified)
-      return res
-        .status(401)
-        .json({ success: false, message: "username or password incorrect." });
-    // if password was correct gen new token with their ID and send ready for client session storage
-    const accesstoken = createToken(user.id);
-    res.status(204).json({
-      success: true,
-      message: "logged in successfully.",
-      data: accesstoken,
-    });
+    if (verified) {
+      // if password was correct gen new token with their ID and send ready for client session storage
+      const accessToken = await createToken(user._id);
+      res.status(200).json({
+        success: true,
+        message: "logged in successfully.",
+        accessToken,
+      });
+    }
   } catch (err) {
-    res.status(500).json({ err });
+    res
+      .status(401)
+      .json({ succes: false, message: "username or password incorrect" });
   }
 }
 
@@ -57,7 +58,7 @@ async function findAll(req, res) {
   try {
     const users = await User.find();
     res.status(200).json({
-      status: 200,
+      success: true,
       data: users,
       message: "Users successfully retrieved",
     });
@@ -72,9 +73,14 @@ async function findById(req, res) {
   try {
     const user = await User.findById(res.locals.currentUser.id);
     res.status(200).json({
-      status: 200,
-      data: user,
+      success: true,
       message: "User successfully retrieved",
+      data: {
+        username: user.username,
+        email: user.email,
+        habits: user.habits,
+        id: user.id,
+      },
     });
   } catch (err) {
     res.status(404).json({ err });

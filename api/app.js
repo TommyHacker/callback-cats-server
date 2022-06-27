@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const mongoose = require("mongoose");
+const dotenv = require("dotenv").config();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -21,11 +22,7 @@ const habitsRoutes = require("./routes/habits");
 app.use("/habits", habitsRoutes);
 
 app.get("/", (req, res) => {
-  try {
-    res.json({ success: true, message: "api success." });
-  } catch (err) {
-    res.status(500).json({ success: false, message: "something went wrong!" });
-  }
+  res.json({ success: true, message: "api success." });
 });
 
 module.exports = app;

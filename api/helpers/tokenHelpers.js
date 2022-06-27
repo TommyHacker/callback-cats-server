@@ -1,10 +1,9 @@
 const jwt = require("jsonwebtoken");
-const secret = process.env.TOKEN_SECRET;
 
 // generate an accesstoken with the users ID if they gave correct password
-exports.createToken = (id) => {
+exports.createToken = async (id) => {
   try {
-    const token = jwt.sign(id, secret);
+    const token = await jwt.sign({ id }, process.env.TOKEN_SECRET);
     return token;
   } catch (err) {
     console.log(err);
@@ -13,9 +12,9 @@ exports.createToken = (id) => {
 };
 
 // Check to see if the accessToken has been tampered with, return false if it has.
-exports.verifyToken = (token) => {
+exports.verifyToken = async (token) => {
   try {
-    const verified = jwt.verify(token, secret);
+    const verified = await jwt.verify(token, secret);
     return true;
   } catch (err) {
     return false;
@@ -25,8 +24,9 @@ exports.verifyToken = (token) => {
 // translate the jsonwebtoken into the users ID if they are verified.
 exports.decodeToken = (token) => {
   try {
-    const result = jwt.decode(token, secret);
-    return result.id;
+    const result =  jwt.decode( token , process.env.TOKEN_SECRET).id.toString();
+
+    return result;
   } catch (err) {
     return false;
   }

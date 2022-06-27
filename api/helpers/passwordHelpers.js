@@ -6,9 +6,13 @@ exports.hashPassword = (password) => {
   return bcrypt.hashSync(password, saltRounds);
 };
 
-exports.verifyPassword = (password, hash) => {
+exports.verifyPassword = async (password, hash) => {
   // hash the password and compare it with the previous hash
-  const verified = bcrypt.compareSync(password, hash);
-  // if they are the same, return true, other wise return false
-  return verified;
+  try {
+    const verified = await bcrypt.compareSync(password, hash);
+    return true;
+    // if they are the same, return true, other wise return false
+  } catch (err) {
+    return "username or password required.";
+  }
 };
