@@ -8,7 +8,7 @@ const HabitSchema = new Schema(
       required: true,
       unique: true,
       min: 1,
-      max: 5,
+      max: 6,
       validate: {
         validator: Number.isInteger,
         message: "{VALUE} is not an integer value",

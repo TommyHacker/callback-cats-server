@@ -6,9 +6,9 @@ const {
   decodeToken,
 } = require("../helpers/tokenHelpers");
 
-// CREATE NEW USER
+// CREATE NEW USER ✔️
 
-async function create(req, res) {
+async function createUser(req, res) {
   try {
     const { username, email, password } = req.body;
 
@@ -18,7 +18,6 @@ async function create(req, res) {
     const user = new User({ username, password: hashedPassword, email });
 
     await user.save();
-
     res.status(201).json({
       status: 201,
       username: username,
@@ -61,16 +60,18 @@ async function findAll(req, res) {
       success: true,
       data: users,
       message: "Users successfully retrieved",
+
     });
   } catch (err) {
     res.status(500).json({ err });
   }
 }
 
-// FIND USER BY USERNAME
+// FIND USER BY ID ✔️
 
-async function findById(req, res) {
+async function findUserById(req, res) {
   try {
+
     const user = await User.findById(res.locals.currentUser.id);
     res.status(200).json({
       success: true,
@@ -81,18 +82,35 @@ async function findById(req, res) {
         habits: user.habits,
         id: user.id,
       },
+
     });
   } catch (err) {
     res.status(404).json({ err });
   }
 }
 
-// DELETE USER  BY ID
+// FIND USER HABITS ✔️
 
-async function deleteById(req, res) {
+async function findUserHabits(req, res) {
+  try {
+    const user = await User.findById(req.params.id, { habits: 1, _id: 0 });
+    res.status(200).json({
+      status: 200,
+      data: user,
+      message: "User successfully retrieved",
+    });
+  } catch (err) {
+    res.status(404).json({ err });
+  }
+}
+
+// DELETE USER  BY ID ✔️
+
+async function deleteUserById(req, res) {
   try {
     const user = res.locals.currentUser;
     const id = req.params.id;
+
     // check if id matches authenticated users id
     if (user._id !== id)
       return res.status({ success: false, message: "not allowed." });
@@ -106,4 +124,8 @@ async function deleteById(req, res) {
   }
 }
 
-module.exports = { create, findAll, findById, deleteById, login };
+
+// module.exports = { create, findAll, findById, deleteById, login };
+
+
+module.exports = { createUser, findAllUsers, findUserById, findUserHabits, deleteUserById };
