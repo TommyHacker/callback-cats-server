@@ -6,9 +6,9 @@ const mongoose = require("mongoose");
 const cron = require('node-cron');
 
 
-cron.schedule('* * * * * *', () => {
-  console.log('running a task every second');
-});
+// cron.schedule('* * * * * *', () => {
+//   console.log('running a task every second');
+// });
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
