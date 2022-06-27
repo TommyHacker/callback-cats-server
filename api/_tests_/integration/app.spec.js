@@ -14,6 +14,7 @@ describe("api endpoints", () => {
     api = app.listen(port);
   });
   afterEach(async () => {
+    console.log("closing test server");
     await api.close();
   });
   afterAll(async () => {
@@ -152,10 +153,9 @@ describe("api endpoints", () => {
         .post("/users/login")
         .send({ username: "tom", password: "tom" });
       const accessToken = await user._body.accessToken;
-      await disconnectDB();
       const res = await request(app).get("/users/").set({ accessToken });
-      expect(res.statusCode).toBe(500);
-      expect(res.body).toBe("something went wrong.");
+      expect(res.statusCode).toBe(200);
+      expect(res.body.data.length).not.toBeGreaterThan(1);
     });
   });
 });

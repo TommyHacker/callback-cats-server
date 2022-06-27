@@ -8,15 +8,12 @@ const {
 
 // CREATE NEW USER ✔️
 
-async function createUser(req, res) {
+async function register(req, res) {
   try {
     const { username, email, password } = req.body;
-
     //hash the password before creating the user.
     const hashedPassword = hashPassword(password);
-
     const user = new User({ username, password: hashedPassword, email });
-
     await user.save();
     res.status(201).json({
       status: 201,
@@ -32,7 +29,6 @@ async function login(req, res) {
   try {
     const { username, password } = req.body;
     const user = await User.findOne({ username });
-
     // did user give the correct password?
     const verified = await verifyPassword(password, user.password);
     // if password was incorrect return error response.
@@ -53,14 +49,13 @@ async function login(req, res) {
 }
 
 // GET ALL USERS
-async function findAll(req, res) {
+async function findAllUsers(req, res) {
   try {
     const users = await User.find();
     res.status(200).json({
       success: true,
       data: users,
       message: "Users successfully retrieved",
-
     });
   } catch (err) {
     res.status(500).json({ err });
@@ -71,7 +66,6 @@ async function findAll(req, res) {
 
 async function findUserById(req, res) {
   try {
-
     const user = await User.findById(res.locals.currentUser.id);
     res.status(200).json({
       success: true,
@@ -82,7 +76,6 @@ async function findUserById(req, res) {
         habits: user.habits,
         id: user.id,
       },
-
     });
   } catch (err) {
     res.status(404).json({ err });
@@ -124,8 +117,13 @@ async function deleteUserById(req, res) {
   }
 }
 
-
 // module.exports = { create, findAll, findById, deleteById, login };
 
-
-module.exports = { createUser, findAllUsers, findUserById, findUserHabits, deleteUserById };
+module.exports = {
+  login,
+  register,
+  findAllUsers,
+  findUserById,
+  findUserHabits,
+  deleteUserById,
+};
