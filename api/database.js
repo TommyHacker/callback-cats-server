@@ -5,7 +5,8 @@ let mongod = null;
 
 const connectDB = async () => {
   try {
-    let dbUrl = "mongodb://localhost:27017/callback-cats-fake";
+    let dbUrl =
+      process.env.DATABASE_URL || "mongodb://localhost:27017/callbackcatsdb";
     if (process.env.NODE_ENV === "test") {
       mongod = await MongoMemoryServer.create();
       dbUrl = mongod.getUri();
