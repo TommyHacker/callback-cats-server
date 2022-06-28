@@ -15,12 +15,14 @@ const HabitSchema = new Schema(
       },
     },
 
-    completed: false,
+    completed: {
+      type: Boolean,
+      default: false,
+    },
 
     frequencyPerDay: {
       type: Number,
       required: true,
-      unique: true,
       validate: {
         validator: Number.isInteger,
         message: "{VALUE} is not an integer value",
@@ -29,7 +31,6 @@ const HabitSchema = new Schema(
 
     bestStreak: {
       type: Number,
-      unique: true,
       validate: {
         validator: Number.isInteger,
         message: "{VALUE} is not an integer value",
@@ -39,7 +40,6 @@ const HabitSchema = new Schema(
 
     currentStreak: {
       type: Number,
-      unique: true,
       validate: {
         validator: Number.isInteger,
         message: "{VALUE} is not an integer value",
