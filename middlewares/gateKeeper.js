@@ -4,10 +4,9 @@ const express = require('express');
 
 exports.isAuthenticated = async (req, res, next) => {
 	try {
+		console.log('headers,', req.headers);
 		//   get access token from request headers
 		const accessToken = req.headers.accesstoken;
-		console.log('getting access token from headers.');
-		console.log(req.headers);
 		// make sure its a valid token
 		const verified = verifyToken(accessToken);
 		// if not valid, return not allowed
