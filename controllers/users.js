@@ -74,5 +74,10 @@ async function deleteUserById(req, res) {
   }
 }
 
-
-module.exports = { createUser, findAllUsers, findUserById, findUserHabits, deleteUserById };
+module.exports = {
+  createUser,
+  findAllUsers,
+  findUserById,
+  findUserHabits,
+  deleteUserById,
+};

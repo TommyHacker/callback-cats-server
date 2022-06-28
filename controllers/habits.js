@@ -5,32 +5,31 @@ const User = require("../models/userSchema");
 
 async function createHabit(req, res) {
   try {
-    const { username, habitType, frequencyPerDay } = req.body;
+    const { userId, habitType, frequencyPerDay } = req.body;
     const habit = new Habit({ habitType, frequencyPerDay });
 
-    const user = await User.findOneAndUpdate(
-      { username: username },
+    const userUpdate = await User.findOneAndUpdate(
+      { "_id": userId },
       { $push: { habits: habit } }
     );
     res.status(201).json({
       status: 201,
-      message: `Type ${habitType} successfully created for ${username}`,
+      message: `Type ${habitType} habit successfully created for user ${id}`,
     });
   } catch (err) {
     res.status(422).json({ err });
   }
 }
 
-
 // FIND HABIT BY ID
 
-
 async function findHabitById(req, res) {
+
   try {
-    const user = await HABIT.findById(req.params.id);
+    const habit = User.findOne({"habits._id": req.params.id })
     res.status(200).json({
       status: 200,
-      data: user,
+      data: habit,
       message: "Habit successfully retrieved",
     });
   } catch (err) {
@@ -38,7 +37,7 @@ async function findHabitById(req, res) {
   }
 }
 
-// // DELETE USER  BY ID
+// // DELETE HABIT  BY ID
 
 // async function destroy(req, res) {
 //   try {
@@ -55,4 +54,4 @@ async function findHabitById(req, res) {
 //   }
 // }
 
-module.exports = { createHabit, findHabitById/* , index, show, destroy  */};
+module.exports = { createHabit, findHabitById /* , index, show, destroy  */ };
