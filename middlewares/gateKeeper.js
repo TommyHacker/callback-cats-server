@@ -6,6 +6,10 @@ exports.isAuthenticated = async (req, res, next) => {
 	try {
 		//   get access token from request headers
 		const { accessToken } = req.body;
+
+		console.log('getting accesstoken from body');
+		console.log('req,body', req.body);
+
 		// make sure its a valid token
 		const verified = verifyToken(accessToken);
 		// if not valid, return not allowed
