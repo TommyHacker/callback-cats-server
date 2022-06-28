@@ -117,16 +117,9 @@ async function deleteUserById(req, res) {
   }
 }
 
-<<<<<<< HEAD:api/controllers/users.js
-// module.exports = { create, findAll, findById, deleteById, login };
-
 module.exports = {
   login,
   register,
-=======
-module.exports = {
-  createUser,
->>>>>>> 7255f5024b2061a26c8c2db8feaea81ce477c1f8:controllers/users.js
   findAllUsers,
   findUserById,
   findUserHabits,
