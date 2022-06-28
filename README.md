@@ -12,10 +12,11 @@
         - http://localhost:3000
 <hr>
 
-###Endpoints
+### Endpoints
 
-    -   localhost:3000/
-    should show welcome message
+    -   localhost:3000/ should show welcome message
+    -   localhost:3000/users show all users if authenticated
+    -   localhost:3000/users/:id show own authenticated data
 
 #### Server is working!
 
