@@ -1,22 +1,24 @@
 const request = require("supertest");
 const app = require("../../app");
 const port = 5000;
+const { decodeToken } = require("../../helpers/tokenHelpers");
 let api;
 
 const { connectDB, disconnectDB } = require("../../database");
 
 describe("api endpoints", () => {
-  beforeAll(() => {
-    connectDB();
+  beforeAll(async () => {
+    await connectDB();
   });
   beforeEach(async () => {
-    api = app.listen(port, () => console.log(`test server port:${port}`));
+    api = app.listen(port);
   });
   afterEach(async () => {
+    console.log("closing test server");
     await api.close();
   });
-  afterAll(() => {
-    disconnectDB();
+  afterAll(async () => {
+    await disconnectDB();
   });
 
   describe("GET root route endpoint", () => {
@@ -33,51 +35,127 @@ describe("api endpoints", () => {
       expect(res.body.success).toBe(true);
     });
   });
-
-  describe("POST /Users should create a new username", () => {
-    test("should respond with a new user created.", async () => {
+  describe("user routes with auth", () => {
+    // CREATE / REGISTER USER
+    test("should return user registered", async () => {
       const res = await request(app)
-        .post("/users/")
-        .send({ username: "tommy hacker" });
-      expect(res.body.success).toBeTruthy();
-      expect(res.body.message).toBe("user created successfully.");
-      expect(res.body.data).toBeTruthy();
+        .post("/users/register")
+        .send({ username: "tom", password: "tom", email: "tom@tom.tom" });
+      expect(res.body.message).toBe("User successfully created");
+      expect(res.body.username).toBe("tom");
     });
 
-    test("should error if no username provided for new user", async () => {
-      const res = await request(app).post("/users/").send({ username: null });
-      expect(res.body.success).toBe(false);
-      expect(res.body.message).toBe("something went wrong.");
+    // LOGIN
+    test("should log user in and return accesstoken", async () => {
+      await request(app)
+        .post("/users/register")
+        .send({ username: "tom", email: "tom@tom.com", password: "password1" });
+
+      const res = await request(app)
+        .post("/users/login")
+        .send({ username: "tom", password: "password1" });
+      expect(res.body).toBeTruthy();
+      expect(res.status).toBe(200);
+      expect(res.body.accessToken).toBeTruthy();
     });
 
-    test("should find and return user by id", async () => {
-      const mockUser = await request(app)
-        .post("/users/")
-        .send({ username: "tommy hacker" });
-      const id = await mockUser._body.data._id;
-      const res = await request(app).get(`/users/${id}`);
+    test("should not allow login with wrong password", async () => {
+      await request(app)
+        .post("/users/register")
+        .send({ username: "tom2", password: "correctpassword" });
+      const res = await request(app)
+        .post("/users/login")
+        .send({ username: "tom2", password: "wrongpassword" });
+      expect(res.body.message).toBe("username or password incorrect");
+    });
+
+    test("should allow user to get own data with valid accessToken", async () => {
+      // REGISTER
+      await request(app)
+        .post("/users/register")
+        .send({ username: "tom", email: "tom@tom.com", password: "pass" });
+      const loggedInUser = await request(app)
+        // LOGIN
+        .post("/users/login")
+        .send({ username: "tom", password: "pass" });
+
+      // store accessToken
+      const accessToken = await loggedInUser._body.accessToken;
+
+      // extract users ID from token
+      const id = await decodeToken(accessToken);
+
+      // request own data with own id in params
+      const res = await request(app).get(`/users/${id}`).set({ accessToken });
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);
-      expect(res.body.data.username).toBe("tommy hacker");
+      expect(res.body.data.username).toBe("tom");
+      expect(res.body.data.email).toBe("tom@tom.tom");
     });
-    test("should return no user found with invalid id", async () => {
-      const res = await request(app).get("/users/123");
+
+    test("should return not allowed user data if token not valid", async () => {
+      // REGISTER
+      await request(app)
+        .post("/users/register")
+        .send({ username: "tom", email: "tom@tom.com", password: "pass" });
+      const loggedInUser = await request(app)
+        // LOGIN
+        .post("/users/login")
+        .send({ username: "tom", password: "pass" });
+
+      // store accessToken
+      const accessToken = await loggedInUser._body.accessToken;
+
+      // request own data with own id in params
+      const res = await request(app)
+        .get(`/users/anyidwilldohere`)
+        .set({ accessToken: "this is a fake access token" });
+      expect(res.statusCode).toBe(500);
+      expect(res.body).toStrictEqual({
+        success: false,
+        message: "not allowed.",
+      });
+    });
+
+    test("should return ALL users", async () => {
+      await request(app)
+        .post("/users/register")
+        .send({ username: "tom", password: "tom", email: "tom" });
+      const user = await request(app)
+        .post("/users/login")
+        .send({ username: "tom", password: "tom" });
+      const accessToken = user._body.accessToken;
+      const res = await request(app).get("/users/").set({ accessToken });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.message).toBe("Users successfully retrieved");
+    });
+
+    test("should return not allowed  for all users", async () => {
+      await request(app)
+        .post("/users/register")
+        .send({ username: "tom", password: "tom", email: "tom" });
+      const user = await request(app)
+        .post("/users/login")
+        .send({ username: "tom", password: "tom" });
+      const accessToken = "TAMPERED WITH ACCESS TOKEN";
+      const res = await request(app).get("/users/").set({ accessToken });
+      expect(res.statusCode).toBe(500);
       expect(res.body.success).toBe(false);
-      expect(res.body.message).toBe("problem while finding user by id.");
+      expect(res.body.message).toBe("not allowed.");
     });
 
-    test("should return success for deleting user", async () => {
-      const mockUser = await request(app)
-        .post("/users/")
-        .send({ username: "tommy hacker" });
-      const id = await mockUser._body.data._id;
-
-      const res = await request(app).delete(`/users/${id}`);
-      expect(res.statusCode).toBe(204);
+    test("should return error if no users found", async () => {
+      await request(app)
+        .post("/users/register")
+        .send({ username: "tom", password: "tom", email: "tom" });
+      const user = await request(app)
+        .post("/users/login")
+        .send({ username: "tom", password: "tom" });
+      const accessToken = await user._body.accessToken;
+      const res = await request(app).get("/users/").set({ accessToken });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.data.length).not.toBeGreaterThan(1);
     });
-    test("should return error if deleteuser.id not found", async () => {
-      const res = await request(app).delete("/users/123");
-      expect(res.statusCode).toBe(404)
-    })
   });
 });

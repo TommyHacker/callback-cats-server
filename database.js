@@ -6,7 +6,7 @@ let mongod = null;
 const connectDB = async () => {
   try {
     let dbUrl =
-      "mongodb+srv://callbackcats:callbackcats12@callbackcats.szfwe8q.mongodb.net/?retryWrites=true&w=majority";
+      process.env.DATABASE_URL || "mongodb://localhost:27017/callbackcatsdb";
     if (process.env.NODE_ENV === "test") {
       mongod = await MongoMemoryServer.create();
       dbUrl = mongod.getUri();
