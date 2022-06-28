@@ -13,9 +13,8 @@ const { isAdmin } = require('../middlewares/isAdmin');
 
 router.post('/register', usersController.register);
 router.post('/login', usersController.login);
-router.post('/:id', isAuthenticated, usersController.findUserById);
+router.get('/:id', isAuthenticated, usersController.findUserById);
 router.get('/', isAuthenticated, usersController.findAllUsers);
-// router.get("/:id", isAuthenticated, usersController.findUserById);
 router.get('/:id/habits', isAuthenticated, usersController.findUserHabits);
 router.delete('/:id', isAuthenticated, isAdmin, usersController.deleteUserById);
 
