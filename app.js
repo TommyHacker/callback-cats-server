@@ -3,10 +3,7 @@ const cors = require("cors");
 const app = express();
 const mongoose = require("mongoose");
 const dotenv = require("dotenv").config();
-const { connectDB } = require("./database");
 const cron = require("node-cron");
-
-connectDB();
 
 // cron.schedule('* * * * * *', () => {
 //   console.log('running a task every second');
@@ -16,11 +13,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
 
-// mongoose.connect(process.env.DATABASE_URL);
+mongoose.connect(process.env.DATABASE_URL);
 
-// mongoose.connection
-//   .on("error", (error) => console.log(error))
-//   .on("open", () => console.log("database live"));
+mongoose.connection
+  .on("error", (error) => console.log(error))
+  .on("open", () => console.log("database live"));
 
 const usersRoutes = require("./routes/users");
 app.use("/users", usersRoutes);
