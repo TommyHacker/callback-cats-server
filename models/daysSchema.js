@@ -12,6 +12,10 @@ const DaySchema = new Schema(
         message: "{VALUE} is not an integer value",
       },
     },
+    fullfiled: {
+      type: boolean,
+      default: 0,
+    },
   },
   { timestamps: true }
 );

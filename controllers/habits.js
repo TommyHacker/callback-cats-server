@@ -9,7 +9,7 @@ async function createHabit(req, res) {
     const habit = new Habit({ habitType, frequencyPerDay });
 
     const userUpdate = await User.findOneAndUpdate(
-      { "_id": userId },
+      { _id: userId },
       { $push: { habits: habit } }
     );
     res.status(201).json({
@@ -21,12 +21,16 @@ async function createHabit(req, res) {
   }
 }
 
-// FIND HABIT BY ID
+// FIND HABIT BY ID ❌
 
 async function findHabitById(req, res) {
-
   try {
-    const habit = User.findOne({"habits._id": req.params.id })
+ 
+    const habit = await User.find(
+      { },
+      { "users.habits._id" : { $elemMatch :  { _id: req.params.id } } }
+    );
+
     res.status(200).json({
       status: 200,
       data: habit,
@@ -34,6 +38,21 @@ async function findHabitById(req, res) {
     });
   } catch (err) {
     res.status(404).json({ err });
+  }
+}
+
+// FIND ALL HABITS  ✔️ (REMOVE ROUTE, THE QUERY WIll HELP TO ADD A NEW DAY INPUT COUNTER EVERY DAY WITH NODE-CRON)
+
+async function findAllHabits(req, res) {
+  try {
+    const habits = await User.find({}).select("habits");
+    res.status(200).json({
+      status: 200,
+      data: habits,
+      message: "Habits successfully  retrieved",
+    });
+  } catch (err) {
+    res.status(500).json({ err });
   }
 }
 
@@ -54,4 +73,8 @@ async function findHabitById(req, res) {
 //   }
 // }
 
-module.exports = { createHabit, findHabitById /* , index, show, destroy  */ };
+module.exports = {
+  createHabit,
+  findHabitById,
+  findAllHabits /* , index, show, destroy  */,
+};

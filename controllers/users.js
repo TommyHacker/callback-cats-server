@@ -50,7 +50,7 @@ async function findUserById(req, res) {
 
 async function findUserHabits(req, res) {
   try {
-    const user = await User.findById(req.params.id, { habits: 1, _id: 0 });
+    const user = await User.findById(req.params.id).select('habits');
     res.status(200).json({
       status: 200,
       data: user,

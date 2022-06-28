@@ -1,7 +1,7 @@
 const Habit = require("../models/habitsSchema");
 const User = require("../models/userSchema");
 
-// CREATE NEW HABIT ✔️
+// ADD NEW DAY
 
 async function addDayInputCounter(req, res) {
   try {
