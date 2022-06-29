@@ -4,11 +4,8 @@ const app = express();
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-const cron = require('node-cron');
+const {addDayToAllHabits} = require("./controllers/days");
 
-// cron.schedule('* * * * * *', () => {
-//   console.log('running a task every second');
-// });
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
