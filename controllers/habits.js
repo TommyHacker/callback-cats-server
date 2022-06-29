@@ -1,5 +1,6 @@
 const Habit = require("../models/habitsSchema");
 const User = require("../models/userSchema");
+const Day = require('../models/daysSchema');
 
 // CREATE NEW HABIT ✔️
 
