@@ -25,6 +25,8 @@ async function register(req, res) {
 	}
 }
 
+// LOGIN USER ✔️
+
 async function login(req, res) {
 	try {
 		const { username, password } = req.body;
@@ -48,7 +50,7 @@ async function login(req, res) {
 	}
 }
 
-// GET ALL USERS
+// GET ALL USERS ✔️
 async function findAllUsers(req, res) {
 	try {
 		const users = await User.find();
@@ -84,7 +86,7 @@ async function findUserById(req, res) {
 
 async function findUserHabits(req, res) {
 	try {
-		const user = await User.findById(req.params.id, { habits: 1, _id: 0 });
+		const user = await User.findById(res.locals.currentUser.id, { 'username': 1, 'habits.habitType': 1, 'habits.completed': 1, 'habits.frequencyPerDay': 1, 'habits.bestStreak': 1, 'habits.currentStreak': 1, 'habits.days.inputCounter': 1,'habits.days.fulfilled': 1,'habits.days.date': 1,  _id: 0 });
 		res.status(200).json({
 			status: 200,
 			data: user,
