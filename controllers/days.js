@@ -1,24 +1,30 @@
-const Habit = require("../models/habitsSchema");
-const User = require("../models/userSchema");
+const User = require('../models/userSchema');
+const Day = require('../models/daysSchema');
+const cron = require('node-cron');
 
-// CREATE NEW HABIT ✔️
+// SCHEDULE TASK FOR EVERY DAY AT 12 AM
 
-async function addDayInputCounter(req, res) {
-  try {
-    const { userId, habitType, frequencyPerDay } = req.body;
-    const habit = new Habit({ habitType, frequencyPerDay });
+cron.schedule('0 0 0 * * *', () => {
+  addDayToAllHabits();
+});
 
-    const user = await User.findOneAndUpdate(
-      { username: username },
-      { $push: { habits: habit } }
-    );
-    res.status(201).json({
-      status: 201,
-      message: `Type ${habitType} successfully created for ${username}`,
-    });
-  } catch (err) {
-    res.status(422).json({ err });
-  }
+
+// TEST IF CRON IS WORKING
+// cron.schedule('* * * * * *', () => {
+//  console.log('Task every second');
+// });
+
+// ADD A NEW DAY TO ALL HABITS IN USERS DATABASE 
+
+async function addDayToAllHabits() {
+  const day = new Day({ date: Date().slice(0, 15) });
+
+  await User.updateMany({}, { $addToSet: { 'habits.$[].days': day } });
+
 }
 
-module.exports = { addDayInputCounter };
+module.exports = { addDayToAllHabits };
+
+
+
+

@@ -5,38 +5,44 @@ const User = require('../models/userSchema');
 
 async function createHabit(req, res) {
 	try {
-		const { userId, habitType, frequencyPerDay } = req.body;
-		const habit = new Habit({ habitType, frequencyPerDay });
+		const { habitType, frequencyPerDay } = req.body;
 
-		const userUpdate = await User.findOneAndUpdate(
-			{ _id: userId },
-			{ $push: { habits: habit } }
+		const userId = res.locals.currentUser.id;
+
+		const day = new Day({ date: Date().slice(0, 15) });
+		const habit = new Habit({ habitType, frequencyPerDay, days: [day] });
+
+		await User.findOneAndUpdate(
+			{ _id: userId, 'habits.habitType': { $ne: habitType } },
+			{ $addToSet: { habits: habit } }
 		);
+
 		res.status(201).json({
 			status: 201,
-			message: `Type ${habitType} habit successfully created for user ${id}`,
+			message: `Type ${habitType} habit successfully created for user ${userId}`,
 		});
 	} catch (err) {
 		res.status(422).json({ err });
 	}
 }
 
-// FIND HABIT BY ID
+// FIND HABIT BY ID (NOT ESSENTIAL)
 
-async function findHabitById(req, res) {
-	try {
-		const habit = User.findOne({ 'habits._id': req.params.id });
-		res.status(200).json({
-			status: 200,
-			data: habit,
-			message: 'Habit successfully retrieved',
-		});
-	} catch (err) {
-		res.status(404).json({ err });
-	}
-}
+// async function findHabitById(req, res) {
 
-// // DELETE HABIT  BY ID
+//   try {
+//     const habit = User.findOne({"habits._id": req.params.id })
+//     res.status(200).json({
+//       status: 200,
+//       data: habit,
+//       message: "Habit successfully retrieved",
+//     });
+//   } catch (err) {
+//     res.status(404).json({ err });
+//   }
+// }
+
+// // DELETE HABIT  BY ID (NON-ESSENTIAL)
 
 // async function destroy(req, res) {
 //   try {
@@ -53,4 +59,6 @@ async function findHabitById(req, res) {
 //   }
 // }
 
-module.exports = { createHabit, findHabitById /* , index, show, destroy  */ };
+module.exports = {
+	createHabit /* findHabitById */ /* , index, show, destroy  */,
+};
