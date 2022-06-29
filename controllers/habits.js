@@ -1,6 +1,7 @@
 const Habit = require("../models/habitsSchema");
 const User = require("../models/userSchema");
-const Day = require('../models/daysSchema');
+const Day = require("../models/daysSchema");
+const { habitFormatter } = require("../helpers/habitTypeFormatter");
 
 // CREATE NEW HABIT ✔️
 
@@ -8,7 +9,9 @@ async function createHabit(req, res) {
   try {
     const habitType = req.body.habit;
     const frequencyPerDay = req.body.frequency;
-    console.log(req.body);
+
+    let habitNum = habitType.split("")[5];
+    console.log("habitnum", habitNum);
 
     const userId = res.locals.currentUser.id;
 
@@ -16,13 +19,15 @@ async function createHabit(req, res) {
     const habit = new Habit({ habitType, frequencyPerDay, days: [day] });
 
     const user = await User.findOneAndUpdate(
-      { _id: userId, "habits.habitType": { $ne: habitType } },
+      { _id: userId, "habits.habitType": { $ne: habitNum } },
       { $addToSet: { habits: habit } }
     );
 
     res.status(201).json({
       status: 201,
-      message: `Type ${habitType} habit successfully created for user ${userId}`,
+      message: `Type ${habitFormatter(
+        habitNum
+      )} habit successfully created for user ${userId}`,
     });
   } catch (err) {
     console.log("there has been an error");
