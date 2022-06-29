@@ -1,5 +1,5 @@
-const Habit = require('../models/habitsSchema');
-const User = require('../models/userSchema');
+const Habit = require("../models/habitsSchema");
+const User = require("../models/userSchema");
 
 // CREATE NEW HABIT ✔️
 
@@ -13,7 +13,7 @@ async function createHabit(req, res) {
     const habit = new Habit({ habitType, frequencyPerDay, days: [day] });
 
     await User.findOneAndUpdate(
-      { _id: userId, 'habits.habitType': { $ne: habitType } },
+      { _id: userId, "habits.habitType": { $ne: habitType } },
       { $addToSet: { habits: habit } }
     );
 
