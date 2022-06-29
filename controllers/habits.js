@@ -22,7 +22,7 @@ async function createHabit(req, res) {
       message: `Type ${habitType} habit successfully created for user ${userId}`,
     });
   } catch (err) {
-    res.status(422).json(err.message);
+    res.status(422).json({ err });
   }
 }
 
