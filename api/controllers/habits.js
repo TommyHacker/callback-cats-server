@@ -10,7 +10,7 @@ async function createHabit(req, res) {
     const habitType = req.body.habit;
     const frequencyPerDay = req.body.frequency;
 
-    let habitNum = habitType.split("")[5];
+    let habitNum = Number(habitType.split("")[5]);
     console.log("habitnum", habitNum);
 
     const userId = res.locals.currentUser.id;
