@@ -6,22 +6,31 @@ const { ObjectId } = require('mongodb');
 
 // SCHEDULE TASK FOR EVERY DAY AT 12 AM
 
-cron.schedule('0,10,20,30,40,50 0 0 * * *', () => {
-  // resetCurrentStreak() Needs fixing
-  addDayToAllHabits()
+cron.schedule('1 0 0 * * *', () => {
+  resetCurrentStreak()
+  addDayToAllHabits();
 });
 
+async function resetCurrentStreak() {
+  let now = new Date();
 
-// TO FIX
-async function resetCurrentStreak(){
+  let yesterdayDate = new Date(now - 1000 * 60 * 60 * 24 * 1);
+
+  yesterdayDate = yesterdayDate.toString().slice(0,15)
+
+  console.log(yesterdayDate);
 
   await User.updateMany(
-    {},
-    { $set: { 'habits.$[last].currentStreak': 0 } },
-    { arrayFilters: [{ 'last.days.[habits.days.length - 1].fulfilled': false }] }
+    
+    {habits: {$elemMatch: {"days.date": yesterdayDate, "days.fulfilled": false  }}},
+
+    {$set: {
+      "habits.$.currentStreak": 0
+    }
+  }
   );
-  
 }
+
 
 
 async function addDayToAllHabits() {
