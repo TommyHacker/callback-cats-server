@@ -24,9 +24,7 @@ async function createHabit(req, res) {
 
     res.status(201).json({
       status: 201,
-      message: `Type ${habitFormatter(
-        habitNum
-      )} "habit successfully created for user`,
+      message: `Habit successfully created for user`,
     });
   } catch (err) {
     console.log('there has been an error');
