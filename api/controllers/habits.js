@@ -1,37 +1,37 @@
-const Habit = require('../models/habitsSchema');
-const User = require('../models/userSchema');
-const Day = require('../models/daysSchema');
-const { habitFormatter } = require('../helpers/habitTypeFormatter');
+const Habit = require("../models/habitsSchema");
+const User = require("../models/userSchema");
+const Day = require("../models/daysSchema");
+const { habitFormatter } = require("../helpers/habitTypeFormatter");
 
 // CREATE NEW HABIT ✔️
 
 async function createHabit(req, res) {
   try {
     const userId = res.locals.currentUser.id;
+
+    // const userId = req.body.id; /* FOR LOCAL TESTING */
+    console.log(req.body);
     const habitType = req.body.habit;
     const frequencyPerDay = req.body.frequency;
-
-    let habitNum = Number(habitType.split('')[5]);
-    console.log('habitnum', habitNum);
 
     const day = new Day({ date: Date().slice(0, 15) });
     const habit = new Habit({ habitType, frequencyPerDay, days: [day] });
 
     await User.findOneAndUpdate(
-      { _id: userId, 'habits.habitType': { $ne: habitNum } },
+      { _id: userId, "habits.habitType": { $ne: habitType } },
       { $addToSet: { habits: habit } }
     );
 
     res.status(201).json({
       status: 201,
       message: `Type ${habitFormatter(
-        habitNum
-      )} habit successfully created for user ${userId}`,
+        habitType
+      )} "habit successfully created for user`,
     });
   } catch (err) {
-    console.log('there has been an error');
+    console.log("there has been an error");
     console.log(err.message);
-    res.status(422).json({ err });
+    res.status(422).json({ err: err.message });
   }
 }
 
@@ -68,6 +68,30 @@ async function createHabit(req, res) {
 //   }
 // }
 
+async function deleteHabit(req, res) {
+  try {
+    const userId = res.locals.currentUser.id;
+    const habitId = req.params.id;
+
+    const user = await User.findById(userId);
+
+    // filter through all habits, return them all into a new array EXCEPT if id === chosen id;
+    const newHabits = await user.habits.filter((habit) => {
+      if (habit._id !== habitId) return habit;
+    });
+    // replace user.habits with the new array and save
+    user.habits = [...newHabits];
+    await user.save();
+    console.log("IT WORKED!");
+    res
+      .status(200)
+      .json({ success: true, message: "habit removed", data: user.habits });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+}
+
 module.exports = {
-  createHabit /* findHabitById */ /* , index, show, destroy  */,
+  createHabit,
+  deleteHabit /* findHabitById */ /* , index, show, destroy  */,
 };
