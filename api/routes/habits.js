@@ -10,6 +10,7 @@ router.post("/", isAuthenticated, habitsController.createHabit);
 // router.get('/', usersController.index)
 // router.get('/:username', usersController.show)
 // router.delete('/:id', usersController.destroy)
+router.put('/:id', daysController.updateHabitCounter)
 
 // userSchema.habit[]
 // router.put("/:id", habitsController.increment);
