@@ -70,7 +70,7 @@ async function updateHabitCounter(req, res) {
   }
 }
 
-async function findSpecificItemInNestedArray(userId, habitType) {}
+
 
 async function getDayValues(userId, habitType) {
   return await User.aggregate([
