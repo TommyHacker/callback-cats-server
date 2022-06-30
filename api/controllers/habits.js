@@ -8,6 +8,9 @@ const { habitFormatter } = require('../helpers/habitTypeFormatter');
 async function createHabit(req, res) {
   try {
     const userId = res.locals.currentUser.id;
+
+    // const userId = req.body.id; /* FOR LOCAL TESTING */
+    
     const habitType = req.body.habit;
     const frequencyPerDay = req.body.frequency;
 
@@ -21,14 +24,17 @@ async function createHabit(req, res) {
 
     res.status(201).json({
       status: 201,
-      message: `Type ${habitType} habit successfully created for user ${userId}`,
+      message: `Type ${habitFormatter(
+        habitNum
+      )} "habit successfully created for user`,
     });
   } catch (err) {
     console.log('there has been an error');
-      console.log(err.message);
+    console.log(err.message);
     res.status(422).json({ err });
   }
 }
+
 
 // FIND HABIT BY ID (NOT ESSENTIAL)
 
