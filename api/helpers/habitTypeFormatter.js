@@ -11,7 +11,7 @@ exports.habitFormatter = (num) => {
       return "Get 8 hours of sleep";
       break;
     case 4:
-      return "Healthy meal";
+      return "Healthy meal";  
       break;
     case 5:
       return "Don't smoke";
