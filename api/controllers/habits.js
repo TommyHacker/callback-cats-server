@@ -11,26 +11,21 @@ async function createHabit(req, res) {
     const habitType = req.body.habit;
     const frequencyPerDay = req.body.frequency;
 
-    let habitNum = Number(habitType.split('')[5]);
-    console.log('habitnum', habitNum);
-
     const day = new Day({ date: Date().slice(0, 15) });
     const habit = new Habit({ habitType, frequencyPerDay, days: [day] });
 
     await User.findOneAndUpdate(
-      { _id: userId, 'habits.habitType': { $ne: habitNum } },
+      { _id: userId, 'habits.habitType': { $ne: habitType } },
       { $addToSet: { habits: habit } }
     );
 
     res.status(201).json({
       status: 201,
-      message: `Type ${habitFormatter(
-        habitNum
-      )} habit successfully created for user ${userId}`,
+      message: `Type ${habitType} habit successfully created for user ${userId}`,
     });
   } catch (err) {
     console.log('there has been an error');
-    console.log(err.message);
+      console.log(err.message);
     res.status(422).json({ err });
   }
 }
