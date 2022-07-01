@@ -8,7 +8,6 @@ const daysController = require("../controllers/days");
 // router.get('/:id', habitsController.findHabitById);
 router.post("/", isAuthenticated, habitsController.createHabit);
 router.delete("/:id", isAuthenticated, habitsController.deleteHabit);
-// router.get("/:id", habitsController.findHabitById)
 // router.get('/', usersController.index)
 // router.get('/:username', usersController.show)
 // router.delete('/:id', usersController.destroy)
